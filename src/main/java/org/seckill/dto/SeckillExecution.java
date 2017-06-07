@@ -1,36 +1,40 @@
 package org.seckill.dto;
 
+import org.seckill.entity.SuccessKilled;
+import org.seckill.enums.SeckillStatEnum;
+
 /**
  * 封装秒杀后的执行结果
+ * 
  * @author Wayss
  */
 
 public class SeckillExecution {
 
     private long seckillId;
-    
-    //秒杀执行结果状态
-    private int state;
-    
-    //状态表示
-    private String stateInfo;
-    
-    //秒杀成功状态
-    private boolean successKilled;
 
-    public SeckillExecution(long seckillId, int state, String stateInfo, boolean successKilled) {
+    // 秒杀执行结果状态
+    private int state;
+
+    // 状态表示
+    private String stateInfo;
+
+    // 秒杀成功状态
+    private SuccessKilled successKilled;
+
+    public SeckillExecution(long seckillId, SeckillStatEnum statEnum,SuccessKilled successKilled) {
         super();
         this.seckillId = seckillId;
-        this.state = state;
-        this.stateInfo = stateInfo;
+        this.state = statEnum.getState();
+        this.stateInfo = statEnum.getStateInfo();
         this.successKilled = successKilled;
     }
 
-    public SeckillExecution(long seckillId, int state, String stateInfo) {
+    public SeckillExecution(long seckillId,  SeckillStatEnum statEnum) {
         super();
         this.seckillId = seckillId;
-        this.state = state;
-        this.stateInfo = stateInfo;
+        this.state = statEnum.getState();
+        this.stateInfo = statEnum.getStateInfo();
     }
 
     public long getSeckillId() {
@@ -57,11 +61,11 @@ public class SeckillExecution {
         this.stateInfo = stateInfo;
     }
 
-    public boolean isSuccessKilled() {
+    public SuccessKilled getSuccessKilled() {
         return successKilled;
     }
 
-    public void setSuccessKilled(boolean successKilled) {
+    public void setSuccessKilled(SuccessKilled successKilled) {
         this.successKilled = successKilled;
     }
 }
