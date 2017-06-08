@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 
 import com.mysql.fabric.xmlrpc.base.Data;
@@ -36,13 +37,14 @@ public class SeckillServiceImpl implements SeckillService{
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     
     //注入Service依赖
-    @Autowired//自动注入  //@Resource  @Inject
+    @Autowired//自动注入    //@Resource  @Inject
     private SeckillDao seckillDao;
+
+    @Autowired
+    private SuccessKilledDao successKilledDao;
     
     //md5盐值,用于混淆md5
     private final String slat = ";asdkjffhsda&(*()";
-    
-    private SuccessKilledDao successKilledDao;
     
     public List<Seckill> getSeckillList() {
         return seckillDao.queryAll(0, 4);
@@ -74,6 +76,13 @@ public class SeckillServiceImpl implements SeckillService{
         return md5;
     }
 
+    @Transactional
+    /**
+     * 使用注解控制事务方法的优点
+     * 1:开发团队达成一致,明确注明编写事务的方法
+     * 2:保证事务方法的执行事件尽可能短,不要穿插其他网络操作RPC/HTTP请求或者剥离事务方法外部
+     * 3:不是所有的方法都需要事务,如,只有一条修改操作或者只读操作不需要事务控制,
+     */
     public SeckillExecution executeSeckill(long seckillId, long userPhone, String md5)
             throws SeckillException, RepeatKillException, SeckillCloseException {
         if (md5 == null || md5.equals(getMD5(seckillId))) {
