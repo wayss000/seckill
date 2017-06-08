@@ -16,6 +16,10 @@ import org.seckill.exception.SeckillException;
 import org.seckill.service.SeckillService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
 import com.mysql.fabric.xmlrpc.base.Data;
@@ -24,11 +28,15 @@ import com.mysql.fabric.xmlrpc.base.Data;
  * 
  * @author Wayss
  */
-
+//@Component 代表所有的组件(包含下面的具体的)
+//@Service  @Dao  @Controller
+@Service
 public class SeckillServiceImpl implements SeckillService{
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     
+    //注入Service依赖
+    @Autowired//自动注入  //@Resource  @Inject
     private SeckillDao seckillDao;
     
     //md5盐值,用于混淆md5
