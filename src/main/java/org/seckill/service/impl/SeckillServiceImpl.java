@@ -85,7 +85,7 @@ public class SeckillServiceImpl implements SeckillService{
      */
     public SeckillExecution executeSeckill(long seckillId, long userPhone, String md5)
             throws SeckillException, RepeatKillException, SeckillCloseException {
-        if (md5 == null || md5.equals(getMD5(seckillId))) {
+        if (md5 == null || !md5.equals(getMD5(seckillId))) {
             throw new SeckillException("seckill data rewrite");
         }
         // 执行秒杀逻辑:减库存 + 记录购买行为
@@ -93,15 +93,24 @@ public class SeckillServiceImpl implements SeckillService{
         try {
             // 减库存
             int updateCount = seckillDao.reduceNumber(seckillId, nowTime);
-            if (updateCount < 0) {
+            if (updateCount <= 0) {
                 // 没有更新到记录,秒杀结束
+                throw new SeckillCloseException("seckill is close");
+            }else{
                 int insertCount = successKilledDao.insertSuccessKilled(seckillId, userPhone);
                 if (insertCount <= 0) {
                     // 重复秒杀
                     throw new RepeatKillException("seckill repeat");
                 } else {
                     // 秒杀成功
-                    SuccessKilled successKilled = successKilledDao.queryByIdWithSeckill(seckillId);
+                    List<SuccessKilled> successKilledLst = successKilledDao.queryByIdWithSeckill(seckillId);
+                    SuccessKilled successKilled = null;
+                    for(SuccessKilled temp : successKilledLst){
+                        if(temp.getUserPhone() == userPhone){
+                            successKilled = temp;
+                            break;
+                        }
+                    }
                     return new SeckillExecution(seckillId, SeckillStatEnum.SUCCESS, successKilled);
                 }
             }
@@ -114,8 +123,6 @@ public class SeckillServiceImpl implements SeckillService{
             //所有编译期异常,转化为运行期异常
             throw new SeckillException("seckill inner error" + e.getMessage());
         }
-        //TODO 我看慕课网上的课程(service层1-4节,没有下面的return null),我这里去掉之后,会报错
-        return null;
     }
 
 }

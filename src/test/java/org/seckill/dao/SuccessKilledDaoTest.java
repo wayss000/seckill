@@ -1,5 +1,7 @@
 package org.seckill.dao;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.junit.Test;
@@ -38,7 +40,14 @@ public class SuccessKilledDaoTest {
 //        long id = 1000;
         long id = 1001;
         long phone = 12345678909L;
-        SuccessKilled successKilled = successKillDao.queryByIdWithSeckill(id);
+        List<SuccessKilled> successKilledLst = successKillDao.queryByIdWithSeckill(id);
+        SuccessKilled successKilled = null;
+        for(SuccessKilled temp : successKilledLst){
+            if(temp.getUserPhone() == phone){
+                successKilled = temp;
+                break;
+            }
+        }
         System.out.println(successKilled);
         System.out.println(successKilled.getSeckillId());
         //结果1
