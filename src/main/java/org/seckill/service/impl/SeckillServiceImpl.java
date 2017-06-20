@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.seckill.dao.SeckillDao;
 import org.seckill.dao.SuccessKilledDao;
+import org.seckill.dao.cache.RedisDao;
 import org.seckill.dto.Exposer;
 import org.seckill.dto.SeckillExecution;
 import org.seckill.entity.Seckill;
@@ -17,13 +18,9 @@ import org.seckill.service.SeckillService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
-
-import com.mysql.fabric.xmlrpc.base.Data;
 
 /**
  * 
@@ -43,6 +40,9 @@ public class SeckillServiceImpl implements SeckillService{
     @Autowired
     private SuccessKilledDao successKilledDao;
     
+    @Autowired
+    private RedisDao redisDao;
+    
     //md5盐值,用于混淆md5
     private final String slat = ";asdkjffhsda&(*()";
     
@@ -55,7 +55,28 @@ public class SeckillServiceImpl implements SeckillService{
     }
 
     public Exposer exportSeckillUrl(long seckillId) {
-        Seckill seckill = seckillDao.queryById(seckillId);
+        //优化点：缓存优化
+        /**
+         * get from cache
+         * if null
+         *   get db
+         *   else
+         *     put cache
+         *  logical
+         */
+        //1.访问Redis
+        Seckill seckill = redisDao.getSecill(seckillId);
+        if(seckill == null){
+            //访问数据库
+            seckill = seckillDao.queryById(seckillId);
+            if(seckill == null){
+                return new Exposer(false, seckillId);
+            }else{
+                redisDao.putSeckill(seckill);
+            }
+            
+        }
+        
         if (seckill == null) {
             return new Exposer(false, seckillId);
         }
