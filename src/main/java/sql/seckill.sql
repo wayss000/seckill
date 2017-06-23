@@ -13,7 +13,7 @@ BEGIN
     START TRANSACTION;
     insert ignore into success_killed
         (seckill_id, user_phone, create_time)
-        value (v_seckill_id, v_phone, v_kill_time)
+        value (v_seckill_id, v_phone, v_kill_time);
     select row_count() into insert_count;
     IF (insert_count = 0) THEN
         ROLLBACK;
@@ -29,12 +29,12 @@ BEGIN
 		        and start_time < v_kill_time
 		        and number > 0;
             select row_count() into insert_count;
-        IF(insert_count = =0)   THEN
+        IF(insert_count = 0)   THEN
            ROLLBACK;
            set r_result = 0;
         ELSEIF (insert_count < 0) THEN
            ROLLBACK;
-           set r_result = -1;
+           set r_result = -2;
         ELSE
            COMMIT;
            set r_result = 1;
@@ -47,7 +47,14 @@ $$ --表示换行
 DELIMITER ;
 
 set @r_result = -3;
+-- 执行存储过程
 call execute_seckill(1000,13511024618,now(),@r_result);
 
 --获取结果
 select @r_result;
+
+-- 存储过程优化
+-- 1.优化的是:事务行级锁持有的时间
+-- 2.不要过度依赖存储过程
+-- 3.简单的逻辑,可以应用存储过程(一般不推荐存储过程,项目逻辑难以维护)
+-- 4.QPS:一个秒杀单6000/qps

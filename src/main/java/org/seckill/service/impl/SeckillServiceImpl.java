@@ -193,4 +193,9 @@ public class SeckillServiceImpl implements SeckillService{
         }
     }
 
+    public SeckillExecution executeSeckillByProcedure(long seckillId, long userPhone, String md5){
+        
+        return null;
+    }
+
 }
