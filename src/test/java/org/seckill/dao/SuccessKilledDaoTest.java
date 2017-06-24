@@ -40,14 +40,7 @@ public class SuccessKilledDaoTest {
 //        long id = 1000;
         long id = 1001;
         long phone = 12345678909L;
-        List<SuccessKilled> successKilledLst = successKillDao.queryByIdWithSeckill(id);
-        SuccessKilled successKilled = null;
-        for(SuccessKilled temp : successKilledLst){
-            if(temp.getUserPhone() == phone){
-                successKilled = temp;
-                break;
-            }
-        }
+        SuccessKilled successKilled = successKillDao.queryByIdWithSeckill(id,phone);
         System.out.println(successKilled);
         System.out.println(successKilled.getSeckillId());
         //结果1

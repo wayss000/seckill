@@ -2,6 +2,7 @@ package org.seckill.dao;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 import org.seckill.entity.Seckill;
@@ -33,6 +34,12 @@ public interface SeckillDao {
      * @param limit
      * @return
      */
-    //这个借口有两个参数，mybatis需要注解才能识别出
+    //这个接口有两个参数，mybatis需要注解才能识别出
     List<Seckill> queryAll(@Param("offset")int offet, @Param("limit")int limit);
+    
+    /**
+     * 通过存储过程执行秒杀操作
+     * @param paramMap
+     */
+    void killByProcedure(Map<String,Object> paramMap);
 }

@@ -28,6 +28,8 @@
         inner join seckill s on 
             sk.seckill_id = s.seckill_id
         where 
-            sk.seckill_id=#{seckill}
+            sk.seckill_id=#{seckillId}
+          and
+            sk.user_phone=#{userPhone}
     </select>
 </mapper>

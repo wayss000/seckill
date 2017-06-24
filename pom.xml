@@ -149,6 +149,13 @@
 			<version>1.5.2</version>
 		</dependency>
 
+        <!-- apache commons tools -->
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+			<version>3.2.1</version>
+		</dependency>
+
 	</dependencies>
 	<build>
 		<finalName>seckill</finalName>
